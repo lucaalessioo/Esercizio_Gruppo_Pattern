@@ -1,30 +1,41 @@
 //interfaccia del Subject
-interface Subject{
-    //metodo per aggiungere Observer
-    void registerObserver(Observer o);
-    //metodo per rimuovere Observer
-    void removeObserver(Observer o);
-    //metodo per notificare Observer
-    void notifyObservers(String message);
+interface Subject {
+    //metodo per registrare observer
+    public void registerOsservatore(Osservatore o);
+
+    //metodo per rimuovere observer
+    public void removeOsservatore(Osservatore o);
+
+    //metodo per mandare notifica a lista observer
+    public void notifyOsservatore(String message);
 }
 
-//interfaccia dell?Observer
-interface Observer{
-    String update(String message);
+//interfaccia observer
+interface Osservatore {
+    //metodo per stampare notifica
+    public String update(String message);
 }
+//classe Observer che implementa interfaccia dell'Observer
+class ConcreteOsservatore implements Osservatore {
 
-//classe Observer che implementa interfaccia Observer
-class ConcreteObserver implements Observer{
-
-    //attributo privato del nome
+    //attributo privato proprio
     private String name;
 
-    //costruttore con parametro
-    public ConcreteObserver(String name){
+    //getter e setter
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
         this.name = name;
     }
- 
-    //Override del metodo update con messaggio
+
+    //costruttore con parametro
+    public ConcreteOsservatore(String name) {
+        this.name = name;
+    }
+
+    //override del metodo dell'interfaccia dell'observer con stampa del messaggio base
     @Override
     public String update(String message) {
         return name + " ha ricevuto aggiornamento: " + message;
