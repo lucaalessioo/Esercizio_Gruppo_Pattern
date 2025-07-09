@@ -30,4 +30,5 @@ public class NotificationManager implements Subject {
     public void removeObserver(Observer o) {
         listaUtenti.remove(o);
     }
+    
 }
