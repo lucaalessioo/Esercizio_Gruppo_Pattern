@@ -1,14 +1,12 @@
-import java.util.List;
-// Corretto sarebbe: import tuo.pacchetto.Observer;
 import java.util.Scanner;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Main {
+
     public static void main(String[] args) {
-
         Scanner scanner = new Scanner(System.in);
-
-        // === SINGLETON: Ottieni l'istanza centrale di NotificationManager (una sola per tutta l'app) ===
-        NotificationManager notMan = NotificationManager.getInstance();
+        NotificationManager notMan = NotificationManager.getInstanza();
 
         while (true) {
             System.out.println("\nBenvenuto, scegli una di queste operazioni:");
@@ -22,42 +20,35 @@ public class Main {
             String scelta = scanner.nextLine();
 
             switch (scelta) {
-                // ===== REGISTRA NUOVO UTENTE (Observer + Decorator) =====
                 case "1":
                     System.out.print("Nome utente: ");
                     String nome = scanner.nextLine();
+                    Observer utente = new ConcreteObserver(nome);
 
-                    // Observer: crei un utente base che implementa l'interfaccia Observer custom
-                    UtenteBase utenteBase = new UtenteBase(nome);
+                    // Scegli i decorator da applicare
+                    utente = scegliDecoratori(scanner, utente);
 
-                    // Decorator: permetti di decorare l'utente con varie personalizzazioni
-                    Observer decorato = scegliDecoratori(scanner, utenteBase);
-
-                    // Observer: aggiungi l'utente (observer) al NotificationManager (subject/observable)
-                    notMan.registerObserver(decorato);
-
+                    notMan.registerObserver(utente);
                     System.out.println("Utente registrato con successo!");
                     break;
 
-                // ===== RIMUOVI UTENTE (Observer) =====
                 case "2":
-                    if (notMan.getObservers().isEmpty()) {
+                    if (notMan.listaUtenti.isEmpty()) {
                         System.out.println("Nessun utente da rimuovere.");
                         break;
                     }
                     System.out.print("Nome utente da rimuovere: ");
                     String nomeDaRimuovere = scanner.nextLine();
 
-                    // Observer: cerchi l'observer (utente/decoratore) tramite il suo nome
                     Observer daRimuovere = null;
-                    for (Observer o : notMan.getObservers()) {
-                        if (o.getNome().equalsIgnoreCase(nomeDaRimuovere)) {
+                    for (Observer o : notMan.listaUtenti) {
+                        // Prova a recuperare il nome (ricorsivo se decorato)
+                        if (recuperaNome(o).equalsIgnoreCase(nomeDaRimuovere)) {
                             daRimuovere = o;
                             break;
                         }
                     }
                     if (daRimuovere != null) {
-                        // Observer: rimuovi l'observer dal NotificationManager
                         notMan.removeObserver(daRimuovere);
                         System.out.println("Utente " + nomeDaRimuovere + " rimosso.");
                     } else {
@@ -65,77 +56,64 @@ public class Main {
                     }
                     break;
 
-                // ===== INVIA NOTIFICA (Singleton + Observer + Decorator) =====
                 case "3":
-                    if (notMan.getObservers().isEmpty()) {
+                    if (notMan.listaUtenti.isEmpty()) {
                         System.out.println("Nessun utente registrato! Registrane uno prima.");
                         break;
                     }
                     System.out.print("Scrivi il messaggio da inviare: ");
                     String messaggio = scanner.nextLine();
 
-                    // Singleton + Observer: NotificationManager (Singleton) invia notifica a tutti gli observer registrati,
-                    // che sono potenzialmente decorati (Decorator)
-                    notMan.inviaNotifica(messaggio);
+                    notMan.notifyObservers(messaggio);
                     break;
 
-                // ===== VISUALIZZA UTENTI (Observer) =====
                 case "4":
-                    List<Observer> observers = notMan.getObservers();
-                    if (observers.isEmpty()) {
+                    if (notMan.listaUtenti.isEmpty()) {
                         System.out.println("Nessun utente registrato.");
                     } else {
                         System.out.println("Utenti attualmente registrati:");
-                        for (Observer o : observers) {
-                            // Observer (puoi accedere al nome perché propagato anche dai decorator)
-                            System.out.println("- " + o.getNome());
+                        for (Observer o : notMan.listaUtenti) {
+                            System.out.println("- " + recuperaNome(o));
                         }
                     }
                     break;
 
-                // ===== USCITA =====
                 case "5":
                     System.out.println("Arrivederci!");
                     return;
 
-                // ===== SCELTA NON VALIDA =====
                 default:
                     System.out.println("Scelta non valida, riprova.");
             }
         }
     }
 
-    // ===== DECORATOR: Permette di comporre la catena di decoratori per personalizzare le notifiche dell'utente =====
-    private static Observer scegliDecoratori(Scanner scanner, UtenteBase utenteBase) {
-        Observer result = utenteBase;
+    // Funzione per permettere all'utente di selezionare quali decoratori applicare
+    private static Observer scegliDecoratori(Scanner scanner, Observer utente) {
+        Observer result = utente;
         boolean continua = true;
 
         while (continua) {
             System.out.println("\nPersonalizza le notifiche dell'utente:");
-            System.out.println("1. Aggiungi timestamp");
-            System.out.println("2. Trasforma in MAIUSCOLO");
-            System.out.println("3. Aggiungi prefisso/emoji");
-            System.out.println("4. Nessun altro decorator (continua)");
+            System.out.println("1. Aggiungi timestamp + MAIUSCOLO");
+            System.out.println("2. Aggiungi prefisso (tipo 'Notifica: ')");
+            System.out.println("3. Nessun altro decorator (continua)");
 
             System.out.print("Scegli (puoi applicare più decoratori in ordine, uno alla volta): ");
             String scelta = scanner.nextLine();
 
             switch (scelta) {
                 case "1":
-                    result = new TimestampDecorator(result); // Decorator: aggiunge timestamp
-                    System.out.println("Aggiunto timestamp.");
+                    result = new Time_Stamp_UpperCase(result);
+                    System.out.println("Aggiunto timestamp+maiuscolo.");
                     break;
                 case "2":
-                    result = new MaiuscoloDecorator(result); // Decorator: trasforma in maiuscolo
-                    System.out.println("Aggiunto maiuscolo.");
-                    break;
-                case "3":
-                    System.out.print("Prefisso da aggiungere (es: 'Notifica: ' oppure '🚨 '): ");
+                    System.out.print("Prefisso da aggiungere: ");
                     String prefisso = scanner.nextLine();
-                    result = new PrefissoDecorator(result, prefisso); // Decorator: aggiunge prefisso
+                    result = new Base_Notifica(result, prefisso);
                     System.out.println("Aggiunto prefisso.");
                     break;
-                case "4":
+                case "3":
                     continua = false;
                     break;
                 default:
@@ -144,4 +122,18 @@ public class Main {
         }
         return result;
     }
+
+    // Funzione che "scava" ricorsivamente tra i decorator per recuperare il nome base
+    private static String recuperaNome(Observer observer) {
+        if (observer instanceof Ab_UserNotificationDecorator) {
+            // Scava ancora
+            return recuperaNome(((Ab_UserNotificationDecorator) observer).osservatore);
+        }
+        if (observer instanceof ConcreteObserver) {
+            // Caso base: ritorna il nome
+            return ((ConcreteObserver) observer).getName();
+        }
+        
+    }
 }
+
