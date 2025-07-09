@@ -133,6 +133,11 @@ public class Main {
             // Caso base: ritorna il nome
             return ((ConcreteObserver) observer).getName();
         }
+        return null;
         
     }
+  
 }
+
+
+
