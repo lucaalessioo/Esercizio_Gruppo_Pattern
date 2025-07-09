@@ -25,7 +25,7 @@ public class NotificationManager implements Subject {
     @Override
     public void notifyOsservatore(String message) {            // Metodo per stampare i messaggi
         for (Osservatore o : listaUtenti) {
-            o.update(message);
+            System.out.println(o.update(message));
         }
     }
 

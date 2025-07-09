@@ -23,7 +23,7 @@ class Time_Stamp_UpperCase extends Ab_UserNotificationDecorator {
     @Override
     public String update(String message) {
 
-        return LocalDateTime.now() + super.update(message).toUpperCase();
+        return LocalDateTime.now() + " " + super.update(message).toUpperCase();
     }
 }
 
@@ -35,7 +35,7 @@ class Base_Notifica extends Ab_UserNotificationDecorator {
 
     @Override
     public String update(String message) {
-        return "Notifica :" + super.update(message);
+        return "Notifica : " + super.update(message);
     }
 
 }
