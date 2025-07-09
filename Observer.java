@@ -1,21 +1,23 @@
-interface Subject{
-    void registerObserver(Observer o);
-    void removeObserver(Observer o);
-    void notifyObservers(String message);
+interface Subject {
+    public void registerOsservatore(Osservatore o);
+
+    public void removeOsservatore(Osservatore o);
+
+    public void notifyOsservatore(String message);
 }
 
-interface Observer{
-    String update(String message);
+interface Osservatore {
+    public String update(String message);
 }
 
-class ConcreteObserver implements Observer{
+class ConcreteOsservatore implements Osservatore {
 
     private String name;
 
-    public ConcreteObserver(String name){
+    public ConcreteOsservatore(String name) {
         this.name = name;
     }
- 
+
     @Override
     public String update(String message) {
         return name + " ha ricevuto aggiornamento: " + message;
