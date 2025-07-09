@@ -1,11 +1,16 @@
+// Classe principale che gestisce il menu e le funzionalità della piattaforma notifiche
+
 import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
+        // Crea uno Scanner per input da tastiera
         Scanner scanner = new Scanner(System.in);
+        // Ottieni l'istanza Singleton del NotificationManager (gestore notifiche)
         NotificationManager notMan = NotificationManager.getInstanza();
 
+        // Loop principale del menu
         while (true) {
             System.out.println("\nBenvenuto, scegli una di queste operazioni:");
             System.out.println("1. Registra nuovo utente");
@@ -19,18 +24,21 @@ public class Main {
 
             switch (scelta) {
                 case "1":
+                    // REGISTRAZIONE NUOVO UTENTE
                     System.out.print("Nome utente: ");
                     String nome = scanner.nextLine();
                     Osservatore utente = new ConcreteOsservatore(nome);
 
-                    // Scegli i decorator da applicare
+                    // Applica decoratori scelti dall'utente (pattern Decorator)
                     utente = scegliDecoratori(scanner, utente);
 
+                    // Registra l'utente (pattern Observer)
                     notMan.registerOsservatore(utente);
                     System.out.println("Utente registrato con successo!");
                     break;
 
                 case "2":
+                    // RIMOZIONE UTENTE PER NOME
                     if (notMan.getListaUtenti().isEmpty()) {
                         System.out.println("Nessun utente da rimuovere.");
                         break;
@@ -40,7 +48,7 @@ public class Main {
 
                     Osservatore daRimuovere = null;
                     for (Osservatore o : notMan.getListaUtenti()) {
-                        // Prova a recuperare il nome (ricorsivo se decorato)
+                        // Recupera il nome effettivo (anche se è decorato)
                         if (recuperaNome(o).equalsIgnoreCase(nomeDaRimuovere)) {
                             daRimuovere = o;
                             break;
@@ -55,6 +63,7 @@ public class Main {
                     break;
 
                 case "3":
+                    // INVIO NOTIFICA A TUTTI GLI UTENTI REGISTRATI
                     if (notMan.getListaUtenti().isEmpty()) {
                         System.out.println("Nessun utente registrato! Registrane uno prima.");
                         break;
@@ -62,21 +71,25 @@ public class Main {
                     System.out.print("Scrivi il messaggio da inviare: ");
                     String messaggio = scanner.nextLine();
 
+                    // Notifica tutti (Observer)
                     notMan.notifyOsservatore(messaggio);
                     break;
 
                 case "4":
+                    // VISUALIZZA TUTTI GLI UTENTI REGISTRATI
                     if (notMan.getListaUtenti().isEmpty()) {
                         System.out.println("Nessun utente registrato.");
                     } else {
                         System.out.println("Utenti attualmente registrati:");
                         for (Osservatore o : notMan.getListaUtenti()) {
+                            // Mostra il nome reale (ignora i decoratori)
                             System.out.println("- " + recuperaNome(o));
                         }
                     }
                     break;
 
                 case "5":
+                    // USCITA DAL PROGRAMMA
                     System.out.println("Arrivederci!");
                     return;
 
@@ -86,7 +99,12 @@ public class Main {
         }
     }
 
-    // Funzione per permettere all'utente di selezionare quali decoratori applicare
+    /**
+     * Permette all'utente di selezionare (in modo iterativo) quali decoratori
+     * applicare all'utente.
+     * Si possono applicare più decoratori in ordine, uno dopo l'altro.
+     * Pattern Decorator: permette di aggiungere comportamenti dinamicamente.
+     */
     private static Osservatore scegliDecoratori(Scanner scanner, Osservatore utente) {
         Osservatore result = utente;
         boolean continua = true;
@@ -119,19 +137,21 @@ public class Main {
         return result;
     }
 
-    // Funzione che "scava" ricorsivamente tra i decorator per recuperare il nome
-    // base
+    /**
+     * Funzione ricorsiva che "scava" tra i decoratori fino a trovare il
+     * ConcreteOsservatore e recupera il nome base dell'utente.
+     * Serve per identificare realmente un utente anche se sono stati applicati più
+     * livelli di decorazione.
+     */
     private static String recuperaNome(Osservatore observer) {
         if (observer instanceof Ab_UserNotificationDecorator) {
-            // Scava ancora
+            // Se è un decorator, scava ancora
             return recuperaNome(((Ab_UserNotificationDecorator) observer).osservatore);
         }
         if (observer instanceof ConcreteOsservatore) {
-            // Caso base: ritorna il nome
+            // Se è il ConcreteOsservatore, torna il nome
             return ((ConcreteOsservatore) observer).getName();
         }
         return null;
-
     }
-
 }
