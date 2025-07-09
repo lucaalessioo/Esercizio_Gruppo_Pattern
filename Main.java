@@ -1,6 +1,4 @@
 import java.util.Scanner;
-import java.util.List;
-import java.util.ArrayList;
 
 public class Main {
 
@@ -23,25 +21,25 @@ public class Main {
                 case "1":
                     System.out.print("Nome utente: ");
                     String nome = scanner.nextLine();
-                    Observer utente = new ConcreteObserver(nome);
+                    Osservatore utente = new ConcreteOsservatore(nome);
 
                     // Scegli i decorator da applicare
                     utente = scegliDecoratori(scanner, utente);
 
-                    notMan.registerObserver(utente);
+                    notMan.registerOsservatore(utente);
                     System.out.println("Utente registrato con successo!");
                     break;
 
                 case "2":
-                    if (notMan.listaUtenti.isEmpty()) {
+                    if (notMan.getListaUtenti().isEmpty()) {
                         System.out.println("Nessun utente da rimuovere.");
                         break;
                     }
                     System.out.print("Nome utente da rimuovere: ");
                     String nomeDaRimuovere = scanner.nextLine();
 
-                    Observer daRimuovere = null;
-                    for (Observer o : notMan.listaUtenti) {
+                    Osservatore daRimuovere = null;
+                    for (Osservatore o : notMan.getListaUtenti()) {
                         // Prova a recuperare il nome (ricorsivo se decorato)
                         if (recuperaNome(o).equalsIgnoreCase(nomeDaRimuovere)) {
                             daRimuovere = o;
@@ -49,7 +47,7 @@ public class Main {
                         }
                     }
                     if (daRimuovere != null) {
-                        notMan.removeObserver(daRimuovere);
+                        notMan.removeOsservatore(daRimuovere);
                         System.out.println("Utente " + nomeDaRimuovere + " rimosso.");
                     } else {
                         System.out.println("Utente non trovato.");
@@ -57,22 +55,22 @@ public class Main {
                     break;
 
                 case "3":
-                    if (notMan.listaUtenti.isEmpty()) {
+                    if (notMan.getListaUtenti().isEmpty()) {
                         System.out.println("Nessun utente registrato! Registrane uno prima.");
                         break;
                     }
                     System.out.print("Scrivi il messaggio da inviare: ");
                     String messaggio = scanner.nextLine();
 
-                    notMan.notifyObservers(messaggio);
+                    notMan.notifyOsservatore(messaggio);
                     break;
 
                 case "4":
-                    if (notMan.listaUtenti.isEmpty()) {
+                    if (notMan.getListaUtenti().isEmpty()) {
                         System.out.println("Nessun utente registrato.");
                     } else {
                         System.out.println("Utenti attualmente registrati:");
-                        for (Observer o : notMan.listaUtenti) {
+                        for (Osservatore o : notMan.getListaUtenti()) {
                             System.out.println("- " + recuperaNome(o));
                         }
                     }
@@ -89,8 +87,8 @@ public class Main {
     }
 
     // Funzione per permettere all'utente di selezionare quali decoratori applicare
-    private static Observer scegliDecoratori(Scanner scanner, Observer utente) {
-        Observer result = utente;
+    private static Osservatore scegliDecoratori(Scanner scanner, Osservatore utente) {
+        Osservatore result = utente;
         boolean continua = true;
 
         while (continua) {
@@ -108,9 +106,7 @@ public class Main {
                     System.out.println("Aggiunto timestamp+maiuscolo.");
                     break;
                 case "2":
-                    System.out.print("Prefisso da aggiungere: ");
-                    String prefisso = scanner.nextLine();
-                    result = new Base_Notifica(result, prefisso);
+                    result = new Base_Notifica(result);
                     System.out.println("Aggiunto prefisso.");
                     break;
                 case "3":
@@ -123,21 +119,19 @@ public class Main {
         return result;
     }
 
-    // Funzione che "scava" ricorsivamente tra i decorator per recuperare il nome base
-    private static String recuperaNome(Observer observer) {
+    // Funzione che "scava" ricorsivamente tra i decorator per recuperare il nome
+    // base
+    private static String recuperaNome(Osservatore observer) {
         if (observer instanceof Ab_UserNotificationDecorator) {
             // Scava ancora
             return recuperaNome(((Ab_UserNotificationDecorator) observer).osservatore);
         }
-        if (observer instanceof ConcreteObserver) {
+        if (observer instanceof ConcreteOsservatore) {
             // Caso base: ritorna il nome
-            return ((ConcreteObserver) observer).getName();
+            return ((ConcreteOsservatore) observer).getName();
         }
         return null;
-        
+
     }
-  
+
 }
-
-
-

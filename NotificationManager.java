@@ -3,7 +3,15 @@ import java.util.ArrayList;
 public class NotificationManager implements Subject {
 
     private static NotificationManager istanza;
-    ArrayList<Osservatore> listaUtenti = new ArrayList<>();
+    private ArrayList<Osservatore> listaUtenti = new ArrayList<>();
+
+    public ArrayList<Osservatore> getListaUtenti() {
+        return listaUtenti;
+    }
+
+    public void setListaUtenti(ArrayList<Osservatore> listaUtenti) {
+        this.listaUtenti = listaUtenti;
+    }
 
     private NotificationManager() {
 
@@ -23,7 +31,7 @@ public class NotificationManager implements Subject {
     @Override
     public void notifyOsservatore(String message) {
         for (Osservatore o : listaUtenti) {
-            o.update(message);
+            System.out.println(o.update(message));
         }
     }
 
