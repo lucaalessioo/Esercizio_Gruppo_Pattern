@@ -4,10 +4,10 @@ import java.util.Observer;
 public class NotificationManager implements Subject {
 
     private static NotificationManager istanza;
-    ArrayList<Observer> listaUtenti;
+    ArrayList<Observer> listaUtenti = new ArrayList<>();
 
     private NotificationManager() {
-        this.listaUtenti = new ArrayList<>();
+        
     }
 
     public static NotificationManager getInstanza() {
@@ -30,7 +30,4 @@ public class NotificationManager implements Subject {
     public void removeObserver(Observer o) {
         listaUtenti.remove(o);
     }
-
-
-
 }
