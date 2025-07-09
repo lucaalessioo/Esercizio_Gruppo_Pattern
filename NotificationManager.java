@@ -1,16 +1,24 @@
 import java.util.ArrayList;
 
-// Classe singleton
+// Classe Singleton
 public class NotificationManager implements Subject {
 
     private static NotificationManager istanza; // istanza
-    ArrayList<Osservatore> listaUtenti = new ArrayList<>(); // Lista di osservatori
+    private ArrayList<Osservatore> listaUtenti = new ArrayList<>(); // lista di osservatori
 
-    private NotificationManager() { // Costruttore
+    public ArrayList<Osservatore> getListaUtenti() { // getter per la lista utenti
+        return listaUtenti;
+    }
+
+    public void setListaUtenti(ArrayList<Osservatore> listaUtenti) { // Setter per la lista utenti
+        this.listaUtenti = listaUtenti;
+    }
+
+    private NotificationManager() { // Costruttore privato
 
     }
 
-    public static NotificationManager getInstanza() { // Metodo per creare l istanza se non è gia presente
+    public static NotificationManager getInstanza() { // Metodo per creare l istanza se non esistente
         if (istanza == null) {
             istanza = new NotificationManager();
         }
@@ -22,19 +30,19 @@ public class NotificationManager implements Subject {
     }
 
     @Override
-    public void notifyOsservatore(String message) { // Metodo per stampare i messaggi
+    public void notifyOsservatore(String message) { // Metodo per vedere i messaggi
         for (Osservatore o : listaUtenti) {
             System.out.println(o.update(message));
         }
     }
 
     @Override
-    public void registerOsservatore(Osservatore o) { // Metodo aggiungere gli osservatori
+    public void registerOsservatore(Osservatore o) { // Metodo per aggiungere l osservatore
         listaUtenti.add(o);
     }
 
     @Override
-    public void removeOsservatore(Osservatore o) { // Metodo per rimuovere gli osservatori
+    public void removeOsservatore(Osservatore o) { // Metodo per rimuovere l osservatore
         listaUtenti.remove(o);
     }
 }
